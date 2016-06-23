@@ -1,0 +1,136 @@
+/*
+
+Darko Bunic
+http://www.redips.net/
+Oct, 2010.
+
+*/
+body{
+	font-family: arial;
+	margin: 0px; /* for IE6 / IE7 */
+}
+
+/* make drag container visible */
+#redips-drag{
+	border: 2px dashed LightBlue;
+	display: table;
+    width: 98.8%;
+}
+
+/* table */
+div#redips-drag table {
+	background-color: #eee;
+	border-collapse: collapse;
+	margin: 7px;
+    table-layout:fixed;	
+    width: 80%;
+}
+
+/* table cells */
+div#redips-drag td{
+	border: 1px solid rgb(0, 0, 0);
+	height: 50px;
+	text-align: left;
+	font-size: 10pt;
+	padding: 2px;
+    background-color : white;
+}
+
+/* drag object (DIV inside table cell) */
+.redips-drag {
+	/*margin: auto;*/
+	text-align: center;
+	width: 136px; /* 87px par defaut*/
+	height: 35px;
+	line-height: 35px;
+	border: 2px solid SteelBlue;
+	background-color: white;
+    position: relative;
+    display: inline-block;
+    
+/*
+Concernant la taille :
+    
+    width: 95px => 6h->6h (= 0minutes)
+    width: 195px => 6h->6h15(= 15 minutes)
+    width: 295px => 6h->6h30(= 30 minutes)
+    width: 395px => 6h->6h45(= 45 minutes)
+    width: 495px => 6h->7h (= 60 minutes)
+*/
+}
+
+/* "Load" button (needed for AJAX version) */
+.button {
+	margin: 10px;
+	background-color: #6A93D4;
+	color: white; 
+	border-width: 1px;
+	width: 44px;
+	padding: 0px;
+}
+#controls{
+    width : 130px;
+  position: fixed;
+  top:5%;
+  right: 10%;
+  border: solid black 4px;
+  background-color: skyblue;
+  z-index: 3;
+  padding:30px;
+  cursor:move;
+  opacity: 0.8;
+}
+#pageMessages {
+  position: fixed;
+  bottom: 15px;
+  right: 15px;
+  width: 30%;
+  z-index: 9000;
+}
+
+.alert {
+  position: relative;
+}
+
+.alert .close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 1em;
+}
+
+.alert .fa {
+  margin-right:.3em;
+}
+.FollowScreen{
+  position: fixed;
+  margin-left: 83.4%;
+  width: inherit;
+}
+.fonctionnement{
+    background-color : #FF9B00 !important
+    
+}
+.fonctionnement coupe{
+    background-color : #FF9B00 !important
+    
+}
+.coupe deux{
+    background-color : #FF9B00 !important
+    
+}
+.vehicule{
+  background-color: rgb(245, 245, 220);
+  text-align: center;
+  font-size: 20;
+  height: 35px;
+  line-height: 35px;
+}
+#tableCitaro, #tableSetra, #tableCity, #tableCrossway, #tableGX, #tableLavage, #tableImmo{
+    width: 15% !important
+}
+#FiltreParVehicule{
+    margin: 7px;
+  width: 15%;
+  text-align: center
+}
