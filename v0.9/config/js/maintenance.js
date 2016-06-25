@@ -69,7 +69,7 @@ function mySaveContent(tbl, type) {
                         // and yes, it should be uppercase
                         if (cn.nodeName === 'DIV' && cn.className.indexOf('drag') > -1) {
                             // prepare query string
-                            query += pname + '[]=' + cn.id + '_' + r + '_' + c;
+                            query += pname + '[]=' + cn.id + '/'+cn.dc+'/_' + r + '_' + c;
                             // initialize JSONarray array
                             JSONarray = [cn.id, r, c];
                             // try to find input elements inside DIV element
@@ -99,19 +99,8 @@ function mySaveContent(tbl, type) {
     // return prepared parameters (if tables are empty, returned value could be empty too) 
     console.log(query);
     var encodebtoa = btoa(query);
-    var dataURL
-    html2canvas(document.body, {
-        onrendered: function(canvas) {
-            dataURL = canvas.toDataURL();
-            console.log(dataURL);
-            insertHistorique(encodebtoa, imgencode);
-        }
-    });
-    var imgencode = btoa(dataURL);
-    console.log("image : " + imgencode)
-    var imgdecode = atoa(imgencode);
-    console.log("image Decode : " + imgdecode)
-    return encodebtoa;
+    insertHistorique(encodebtoa, 0);
+    //return encodebtoa;
 };
 function GetRegle() {
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -537,7 +526,7 @@ function Recolor(me) {
 }
 function getRemplacement(me) {
     bootbox.dialog({
-        title: "Remplacement de Bus",
+        title: "Remplacement de Bus - Bus n°" + me,
         message: '<div class="row">  ' +
             '<div class="col-md-12"> ' +
             '<form class="form-horizontal"> ' +
@@ -550,6 +539,7 @@ function getRemplacement(me) {
             '<label class="col-md-5 control-label" for="heureDebut">Heure de Remplacement :</label> ' +
             '<div class="col-lg-4" style="display: inline-flex;"> ' +
             '<input id="heureDebut" name="heureDebut" type="text" placeholder="12:00" class="form-control input-md"></div><label class="col-md-9 control-label"></div> ' +
+            '<label class="col-md-5 control-label" style="top: -6px;">Le bus sera sur la tache : </label>' + document.getElementById(me).parentElement.parentElement.childNodes[0].innerHTML +
             '</div> </div>' +
             '</form> </div>  </div>',
         buttons: {
@@ -579,11 +569,15 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
             var finpremier = dateDiff(heureDebut, HeureElement) + 1
             document.getElementById(me).parentElement.parentElement.style.height = "75px"
             document.getElementById(me).style.top = "-15px"
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = heureDebut;
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
             document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
+            document.getElementById(me).dc = "remplace"
             document.getElementById(me).onmouseout = null;
             document.getElementById(BusQuiRemplace).style.width = 20 * finpremier
             document.getElementById(BusQuiRemplace).onmouseout = null;
+            document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
             //CLONE
             var lenghtElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length - 1
             var HeureDebutElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[lenghtElement].innerHTML
@@ -595,36 +589,48 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
             document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe")[0].appendChild(copy1)
             document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe")[0].childNodes[1].id = BusQuiRemplace + "z0";
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
-            document.getElementById(me).onmouseout = null;
+            document.getElementById(me).dc = "remplace"
+            document.getElementById(me).onmouseout = null
             document.getElementById(BusQuiRemplace + "z0").style.width = 20 * findeuxieme
             document.getElementById(BusQuiRemplace + "z0").onmouseout = null;
             document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
+            document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].dc = "remplace"
             document.getElementById(BusQuiRemplace).style.top = "15"
+            document.getElementById(BusQuiRemplace + "z0").dc = "clone"
 
         }
         if (heureDebut > HeureElement) { // SI Deuxieme PARTIE DU COUPE
+            console.log(me)
+            console.log(debut)
             var HeureFinElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("fin")[0].innerHTML
             var fincoupe = dateDiff(heureDebut, HeureFinElement) + 1
             document.getElementById(me).parentElement.parentElement.style.height = "75px"
             document.getElementById(me).style.top = "-15px"
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML + heureDebut;
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
             document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
+            document.getElementById(me).dc = "remplace"
             document.getElementById(BusQuiRemplace).style.width = 20 * fincoupe
             document.getElementById(BusQuiRemplace).onmouseout = null;
             document.getElementById(BusQuiRemplace).style.top = "15"
-
+            document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
         }
     } //SI YA UN COUPE
     if (document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length <= 0) { 
         document.getElementById(me).parentElement.parentElement.style.height = "75px"
         document.getElementById(me).style.top = "-15px"
+        document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = heureDebut;
+        document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
         document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
         document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
         document.getElementById(me).onmouseout = null;
+        document.getElementById(me).dc = "remplace"
         document.getElementById(BusQuiRemplace).style.top = "15"
         document.getElementById(BusQuiRemplace).style.width = 20 * fin
         document.getElementById(BusQuiRemplace).onmouseout = null;
+        document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
     } //SI PAS DE COUPE
     if (document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length > 0 && document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux").length > 0) {
         var HeureElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[0].innerHTML
@@ -635,25 +641,37 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
             var finpremier = dateDiff(heureDebut, HeureElement) + 1
             document.getElementById(me).parentElement.parentElement.style.height = "75px"
             document.getElementById(me).style.top = "-15px"
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = heureDebut;
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
             document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
+            document.getElementById(me).dc = "remplace"
             document.getElementById(BusQuiRemplace).style.width = 20 * finpremier
             document.getElementById(BusQuiRemplace).onmouseout = null;
+            document.getElementById(BusQuiRemplace).style.top = "15px"
+            document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
             //CLONE
             var lenghtElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length - 1
-            var HeureDebutElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[lenghtElement].innerHTML
-            var HeureFinElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("fin")[0].innerHTML
+            var nbfin = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length - document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux").length
+            if (nbfin < 0){nbfin = nbfin * (-1)}
+            var nbdebut = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre").length - document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux").length - 1
+            if (nbdebut < 0) { nbdebut = nbdebut * (-1) }
+            var HeureFinElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[nbdebut].innerHTML
+            var HeureDebutElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[nbfin].innerHTML
             var findeuxieme = dateDiff(HeureDebutElement, HeureFinElement) + 1
             var copy1 = document.getElementById(BusQuiRemplace).cloneNode(true);
             document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe")[0].appendChild(copy1)
             document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe")[0].childNodes[1].id = BusQuiRemplace + "z0";
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
-            document.getElementById(BusQuiRemplace + "z0").style.width = 20 * findeuxieme
+            document.getElementById(me).dc = "remplace"
+            document.getElementById(BusQuiRemplace + "z0").style.width = 20 * findeuxieme + 40
             document.getElementById(BusQuiRemplace + "z0").onmouseout = null;
+            document.getElementById(BusQuiRemplace + "z0").style.top = "0"
             document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
-            //document.getElementById(BusQuiRemplace).style.top = "15"
+            document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].dc = "remplace"
+            document.getElementById(BusQuiRemplace + "z0").dc = "clone"
             //CLONE TRIPLE
             if (document.getElementById(me).parentElement.parentElement.getElementsByClassName("coupe deux").length > 0) {
                 var lenghtElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux").length - 1
@@ -665,9 +683,13 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
                 document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe deux")[0].childNodes[1].id = BusQuiRemplace + "z1";
                 document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
                 document.getElementById(me).onmouseout = null;
-                document.getElementById(BusQuiRemplace + "z1").style.width = 20 * fintriple
+                document.getElementById(me).dc = "remplace"
+                document.getElementById(BusQuiRemplace + "z1").style.width = 20 * fintriple -20
                 document.getElementById(BusQuiRemplace + "z1").onmouseout = null;
+                document.getElementById(BusQuiRemplace + "z1").style.top = "0"
                 document.getElementById(BusQuiRemplace + "z1").parentElement.childNodes[0].style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
+                document.getElementById(BusQuiRemplace + "z1").parentElement.childNodes[0].dc = "remplace"
+                document.getElementById(BusQuiRemplace + "z1").dc = "clone"
             }
 
         }
@@ -675,18 +697,22 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
         var HeureElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre")[lenghtElement].innerHTML
         var HeureDebutElementCoupeDeux = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux")[0].innerHTML
         console.log("HD=>" + heureDebut + "HE=>" + HeureElement + "HDECD=>" + HeureDebutElementCoupeDeux)
-        if (heureDebut > HeureElement && HeureElement < HeureDebutElementCoupeDeux) { // SI Deuxieme PARTIE DU COUPE
+        if (heureDebut > HeureElement && HeureElement < HeureDebutElementCoupeDeux && heureDebut < HeureDebutElementCoupeDeux) { // SI Deuxieme PARTIE DU COUPE
             console.log("2")
             var HeureFinElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("fin")[0].innerHTML
             var fincoupe = dateDiff(heureDebut, HeureDebutElementCoupeDeux) + 1
             document.getElementById(me).parentElement.parentElement.style.height = "75px"
             document.getElementById(me).style.top = "-15px"
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = heureDebut;
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
             document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
-            document.getElementById(BusQuiRemplace).style.width = 20 * fincoupe
+            document.getElementById(me).dc = "remplace"
+            document.getElementById(BusQuiRemplace).style.width = 20 * fincoupe - 20
             document.getElementById(BusQuiRemplace).onmouseout = null;
             document.getElementById(BusQuiRemplace).style.top = "15"
+            document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
             var lenghtElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux").length - 1
             var HeureDebutElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("entre deux")[lenghtElement].innerHTML
             var HeureFinElement = document.getElementById(me).parentElement.parentElement.getElementsByClassName("fin")[0].innerHTML
@@ -697,9 +723,14 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
             document.getElementById(me).parentElement.parentElement.getElementsByClassName("fonctionnement coupe deux")[0].childNodes[1].id = BusQuiRemplace + "z0";
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
-            document.getElementById(BusQuiRemplace + "z0").style.width = 20 * findeuxieme
+            document.getElementById(me).dc = "remplace"
+            document.getElementById(BusQuiRemplace + "z0").style.width = 20 * findeuxieme - 20
+            document.getElementById(BusQuiRemplace + "z0").style.top = "0"
             document.getElementById(BusQuiRemplace + "z0").onmouseout = null;
+            document.getElementById(BusQuiRemplace + "z0").dc ="clone"
             document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
+            document.getElementById(BusQuiRemplace + "z0").parentElement.childNodes[0].dc = "remplace"
+
 
         }
         if (heureDebut > HeureDebutElementCoupeDeux && HeureElement < HeureDebutElementCoupeDeux) { // SI Troisieme PARTIE DU COUPE
@@ -708,15 +739,19 @@ function writeRemplacement(me, BusQuiRemplace, debut, fin, heureDebut) {
             var fincoupe = dateDiff(heureDebut, HeureFinElement) + 1
             document.getElementById(me).parentElement.parentElement.style.height = "75px"
             document.getElementById(me).style.top = "-15px"
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].innerHTML = heureDebut;
+            document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 1].style.verticalAlign = "bottom";
             document.getElementById(me).parentElement.parentElement.getElementsByTagName("td")[debut + 2].appendChild(document.getElementById(BusQuiRemplace))
             document.getElementById(me).style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
             document.getElementById(me).onmouseout = null;
-            document.getElementById(BusQuiRemplace).style.width = 20 * fincoupe
+            document.getElementById(me).dc = "remplace"
+            document.getElementById(BusQuiRemplace).style.width = 20 * fincoupe - 20
             document.getElementById(BusQuiRemplace).onmouseout = null;
             document.getElementById(BusQuiRemplace).style.top = "15"
+            document.getElementById(BusQuiRemplace).dc = "changement-" + heureDebut
 
         }
-    }
+    } //SI YA UN TRIPLE
 }
 function getChaine(id) {
     if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -736,16 +771,66 @@ function getChaine(id) {
             chaineslice.forEach(function (entry, index) {
                 chaine2 = entry.split("_")
                 chaine2[2] = chaine2[2].split("&")[0]
+                chaine2[0] = entry.split("_")[0].split("/")[0]
                 var element = document.getElementById(chaine2[0])
                 if (typeof (element) != 'undefined' && element != null) {
                     document.getElementById(chaine2[0]).remove();
                 }
-                document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML = "<div id=" + chaine2[0] + " class=\"redips-drag ui-widget-content\" onmouseout=\"testdrop('" + chaine2[0] + "')\"  onclick=\"getRemplacement('" + chaine2[0] + "')\"  style=\"width: 695px, position: relative; background-color: white\">" + chaine2[0].split("c0")[0].split("c1")[0] + "</div>";
-                testdrop(chaine2[0]);
+                var changement = entry.split("_")[0].split("/")[1].split("-")[0]
+                var heureChangement = entry.split("_")[0].split("/")[1].split("-")[1]
+                if (changement == "changement" || changement == "clone") {
+                    document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML = document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML + "<div id=" + chaine2[0] + " class=\"redips-drag ui-widget-content\" onclick=\"getRemplacement('" + chaine2[0] + "')\"  style=\"width: 695px, position: relative; background-color: white\">" + chaine2[0].split("c0")[0].split("c1")[0].split("z0")[0].split("z1")[0] + "</div>";
+                    if (changement == "changement") {
+                        document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2] - 1].innerHTML = document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2] - 1].innerHTML + heureChangement
+                        document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2] - 1].style.verticalAlign = "bottom"
+                    }
+                    document.getElementById(chaine2[0]).dc = changement
+                    if (changement == "clone") {
+                        ReglageCellule(chaine2[0])
+                    }
+                }
+                else if (changement == "remplace") {
+                    document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML = document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML + "<div id=" + chaine2[0] + " class=\"redips-drag ui-widget-content\" onclick=\"getRemplacement('" + chaine2[0] + "')\"  style=\"width: 695px, position: relative; background-color: white\">" + chaine2[0].split("c0")[0].split("c1")[0] + "</div>";
+                    console.log("remplace")
+                    console.log(chaine2[0])
+                    ReglageCellule(chaine2[0])
+                    document.getElementById(chaine2[0]).dc = "remplace"
+                } else {
+                    document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML = document.getElementById('contenue').rows[chaine2[1]].cells[chaine2[2]].innerHTML + "<div id=" + chaine2[0] + " class=\"redips-drag ui-widget-content\" onmouseout=\"testdrop('" + chaine2[0] + "')\"  onclick=\"getRemplacement('" + chaine2[0] + "')\"  style=\"width: 695px, position: relative; background-color: white\">" + chaine2[0].split("c0")[0].split("c1")[0] + "</div>";
+                    document.getElementById(chaine2[0]).dc = "0"
+                    ReglageCellule(chaine2[0])
+                }
+                RecolorChangement(chaine2[0])
             })
         }
     }
 
     xmlhttp.open("GET", "../accueil/requete.php?getChaine=" + id, true);
     xmlhttp.send();
+}
+function RecolorChangement(me) {
+    var NbDiv = document.getElementById(me).parentElement.parentElement.getElementsByTagName("div").length
+    for (var i = 0; i < NbDiv; i++) {
+        if (document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].dc == "remplace") {
+            if (i == 3) {
+                document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].style.top = 0
+            } else {
+                document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].style.top = "-15px"
+            }
+
+        document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].style.background = "repeating-linear-gradient(45deg,white,white 10px,#ccc 10px,#ccc 20px)"
+        }
+        if (document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].dc == "changement") {
+            document.getElementById(me).style.top = "15px"
+            document.getElementById(me).style.background = ""
+            document.getElementById(me).style.backgroundColor = "white"
+            document.getElementById(me).parentElement.parentElement.style.height = "75px"
+        }
+        if (document.getElementById(me).parentElement.parentElement.getElementsByTagName("div")[i].dc == "clone") {
+            document.getElementById(me).style.top = 0
+            document.getElementById(me).style.background = ""
+            document.getElementById(me).style.backgroundColor = "white"
+            document.getElementById(me).parentElement.parentElement.style.height = "75px"
+        }
+    }
 }

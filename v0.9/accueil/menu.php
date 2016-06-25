@@ -17,7 +17,8 @@
 
 <body class="login login-action-login wp-core-ui  locale-fr-fr">
     <div id="login">
-        <h1><a href="" title="KeoAffect" tabindex="-1">Outil d'Affectation</a></h1>
+		    <h1 style="height: 50px;"><a href="" title="KeoAffect" tabindex="-1"></a></h1>
+            <img style="width: 300px;margin-left: 12vw;" src="../config/css/img/login-logo.png" />
         <div id="wrapper">
             <!-- Sidebar -->
             <div id="sidebar-wrapper">
@@ -38,7 +39,7 @@
                         <a href="#" onclick="Menu(this.name);" name="Vehicule">Intégration Vehicule</a>
                     </li>
                     <li>
-                        <a href="#" onclick="Menu(this.name);" name="Import">Import</a>
+                        <a href="#" onclick="Menu(this.name);" name="Import">Importation</a>
                     </li>
                     <li>
                         <a href="#" onclick="Menu(this.name);" name="Déconnexion">Déconnexion</a>
@@ -178,7 +179,7 @@
                 <div class="container-fluid" id="divHASTUS">
                     <div class="row">
                         <div class="col-lg-12">
-                            <h1>Test Hastus</h1>
+                            <h1>Importation Hastus</h1>
                             <form class="form-horizontal" role="form" style="background: transparent">
                                 <p>
                                     <br> Importation de la Base Hastus, Attention ce n'est pas réversible :

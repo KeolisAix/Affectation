@@ -1,5 +1,5 @@
 <?php 
-$pdoAffectation = new PDO("pgsql:dbname=affectation;host=127.0.0.1;user=postgres;password=postgres"); 
+$pdoAffectation = new PDO("pgsql:dbname=affectation;host=192.168.207.22;user=postgres;password=postgres"); 
 
 function getServiceSQL($pdoAffectation, $periode, $JourDeAffectation)
 {
